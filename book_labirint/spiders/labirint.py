@@ -1,6 +1,6 @@
 import scrapy
 from scrapy.http import HtmlResponse
-
+from book_labirint.items import BookLabirintItem
 
 class LabirintSpider(scrapy.Spider):
     name = 'labirint'
@@ -14,12 +14,17 @@ class LabirintSpider(scrapy.Spider):
             yield response.follow(self.full_domain + link, callback=self.process_link)
 
         next_page = response.xpath('//div[contains(@class, "pagination-next")]/a[@title = "Следующая"]/@href').get()
+        print(next_page)
         if next_page:
-            yield response.follow(self.start_urls+next_page, callback=self.parse())
+            yield response.follow(self.start_urls[0]+next_page, callback=self.parse)
 
 
         print()
-        pass
+
 
     def process_link(self, response: HtmlResponse):
-        print()
+        name = response.xpath('//h1/text()').get()
+        item = BookLabirintItem()
+        item['url'] = response.url
+        item['name'] = name
+        yield item
