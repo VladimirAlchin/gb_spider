@@ -12,5 +12,11 @@ class BookLabirintItem(scrapy.Item):
     _id = scrapy.Field()
     url = scrapy.Field()
     name = scrapy.Field()
+    rate = scrapy.Field()
+    authors = scrapy.Field()
+    cost_old = scrapy.Field()
+    cost_new = scrapy.Field()
+    currency = scrapy.Field()
+    data_cost = scrapy.Field()
 
     # pass
