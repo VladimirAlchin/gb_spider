@@ -18,5 +18,6 @@ class BookLabirintItem(scrapy.Item):
     cost_new = scrapy.Field()
     currency = scrapy.Field()
     data_cost = scrapy.Field()
+    cost_status = scrapy.Field()
 
     # pass
