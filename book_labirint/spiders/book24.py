@@ -12,12 +12,15 @@ class Book24Spider(scrapy.Spider):
     def parse(self, response: HtmlResponse):
         links = response.xpath('//article/div[@class = "product-card__image-holder"]/a/@href').getall()
         print()
-        for link in links:
-            yield response.follow(self.full_domain + link, callback=self.process_link)
+        # for link in links:
+        #     yield response.follow(self.full_domain + link, callback=self.process_link)
 
-        # next_page = response.xpath('//div[contains(@class, "pagination-next")]/a[@title = "Следующая"]/@href').get()
-        # if next_page:
-        #     yield response.follow(self.start_urls[0] + next_page, callback=self.parse)
+        # next_page = response.xpath('//li[@class= "pagination__button-item"]/a[contains(@class, "_next")]/@href').get()
+        next_page = response.xpath('//li[contains(@class, "pagination__button-item")]/a//@href').get()
+        print(next_page)
+
+        if next_page:
+            yield response.follow(self.start_urls[0] + next_page, callback=self.parse)
 
     def process_link(self, response: HtmlResponse):
         name = response.xpath('//h1/text()').getall()[0]
@@ -33,7 +36,7 @@ class Book24Spider(scrapy.Spider):
         item['name'] = name
         item['rate'] = rate
         item['authors'] = authors
-        if old_price.split()[0]:
+        if old_price:
             item['cost_old'] = old_price.split()[0]
             item['currency'] = old_price.split()[1]
         else:
@@ -44,7 +47,4 @@ class Book24Spider(scrapy.Spider):
             item['cost_new'] = new_price
         else:
             item['cost_new'] = 0
-
-        # item['data_cost'] = data_cost
-        print()
         yield item
