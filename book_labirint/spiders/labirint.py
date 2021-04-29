@@ -15,17 +15,16 @@ class LabirintSpider(scrapy.Spider):
             yield response.follow(self.full_domain + link, callback=self.process_link)
 
         next_page = response.xpath('//div[contains(@class, "pagination-next")]/a[@title = "Следующая"]/@href').get()
-        print(next_page)
         if next_page:
             yield response.follow(self.start_urls[0] + next_page, callback=self.parse)
 
-        print()
 
     def process_link(self, response: HtmlResponse):
         name = response.xpath('//h1/text()').get()
         rate = response.xpath('//div[@id="rate"]/text()').get()
         authors = response.xpath('//div[@class="authors"]/a/text()').getall()
         data_cost = response.xpath('//div[contains(@class, "buying-price")]/span/text()').getall()
+        # TODO проверить эту часть кода
         if len(data_cost) == 2:
             data_cost = response.xpath('//div[contains(@class, "buying-price")]/span[contains(@cl'
                                        'ass, "buying-price-val")]/span/text()').getall()
