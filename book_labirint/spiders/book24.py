@@ -22,26 +22,29 @@ class Book24Spider(scrapy.Spider):
     def process_link(self, response: HtmlResponse):
         name = response.xpath('//h1/text()').getall()[0]
         name = name.strip(' \t\n\r')
-        rate = response.xpath('//div[contains(@class,"rating__rate-value")]/text()').get()
+        rate = response.xpath('//div[contains(@class, "_rate-value")]//text()').get()
         authors = response.xpath('//a[@itemprop="author"]/text()').getall()
         new_price = response.xpath('//div[@class = "item-actions__price"]/b/text()').get()
         currency = response.xpath('//div[@class = "item-actions__price"]/text()').get()
         old_price = response.xpath('//div[@class = "item-actions__price-old"]/text()').get()
-        # data_cost = response.xpath('//div[contains(@class, "buying-price")]/span/text()').getall()
-        # if len(data_cost) == 2:
-        #     data_cost = response.xpath('//div[contains(@class, "buying-price")]/span[contains(@cl'
-        #                                'ass, "buying-price-val")]/span/text()').getall()
-        # для скидки //div[contains(@class, "buying-price")]/span/text()
-        # без //div[contains(@class, "buying-price")]/span[contains(@class, "buying-price-val")]/span/text()
 
         item = BookLabirintItem()
         item['url'] = response.url
         item['name'] = name
         item['rate'] = rate
         item['authors'] = authors
-        item['cost_old'] = old_price.split()[0]
-        item['cost_new'] = new_price
-        item['currency'] = old_price.split()[1]
+        if old_price.split()[0]:
+            item['cost_old'] = old_price.split()[0]
+            item['currency'] = old_price.split()[1]
+        else:
+            item['cost_old'] = 0
+            item['currency'] = ''
+
+        if new_price:
+            item['cost_new'] = new_price
+        else:
+            item['cost_new'] = 0
+
         # item['data_cost'] = data_cost
         print()
         yield item
