@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.http import HtmlResponse
 from book_labirint.items import BookLabirintItem
-
+from bs4 import BeautifulSoup as bs
 
 class Book24Spider(scrapy.Spider):
     name = 'book24'
@@ -12,12 +12,18 @@ class Book24Spider(scrapy.Spider):
     def parse(self, response: HtmlResponse):
         links = response.xpath('//article/div[@class = "product-card__image-holder"]/a/@href').getall()
         print()
-        # for link in links:
-        #     yield response.follow(self.full_domain + link, callback=self.process_link)
+        for link in links:
+            yield response.follow(self.full_domain + link, callback=self.process_link)
 
-        # next_page = response.xpath('//li[@class= "pagination__button-item"]/a[contains(@class, "_next")]/@href').get()
+        next_page = response.xpath('//li[@class= "pagination__button-item"]/a[contains(@class, "_next")]/@href').get()
         next_page = response.xpath('//li[contains(@class, "pagination__button-item")]/a//@href').get()
         print(next_page)
+
+        soup = bs(response.text, "lxml")
+        al_txt = response.text
+        with open('f.txt', 'w', encoding='utf-8') as f:
+            f.write(al_txt)
+        print(1)
 
         if next_page:
             yield response.follow(self.start_urls[0] + next_page, callback=self.parse)
